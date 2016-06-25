@@ -14,7 +14,7 @@ npm install
 Also, this project uses Bower to resolve dependencies.
 
 ```sh
-npm install -g Bower
+npm install -g bower
 bower install
 ```
 
