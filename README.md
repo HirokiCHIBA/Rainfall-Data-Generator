@@ -8,6 +8,14 @@ This project uses Gulp as a task runner. So you should install a gulp command fi
 
 ```sh
 npm install -g gulp
+npm install
+```
+
+Also, this project uses Bower to resolve dependencies.
+
+```sh
+npm install -g Bower
+bower install
 ```
 
 Tasks
