@@ -1,6 +1,7 @@
 'use strict';
 
 import path from 'path';
+import BowerWebpackPlugin from 'bower-webpack-plugin';
 
 // Output path
 const dest = './build';
@@ -36,6 +37,7 @@ export const webpack = {
             }
         ]
     },
+    plugins: [new BowerWebpackPlugin()],
     postcss: function () {
         return [precss, autoprefixer];
     }
