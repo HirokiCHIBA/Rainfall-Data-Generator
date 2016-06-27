@@ -1,6 +1,6 @@
 {
-  "name": "es2015-postcss-skeleton",
-  "description": "",
+  "name": "rain-data-generator",
+  "description": "Tool for generating the data of rainfall",
   "main": "index.js",
   "authors": [],
   "license": "MIT",
@@ -12,5 +12,8 @@
     "bower_components",
     "test",
     "tests"
-  ]
+  ],
+  "devDependencies": {
+    "reset-css": "^2.0.2011012603"
+  }
 }

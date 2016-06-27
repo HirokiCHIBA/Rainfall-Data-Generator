@@ -9,7 +9,7 @@ gulp.task('watch', () => {
         gulp.start(['webpack']);
     });
     watch(config.css, () => {
-        gulp.start(['css']);
+        gulp.start(['webpack']);
     });
     watch(config.www, () => {
         gulp.start(['copy']);

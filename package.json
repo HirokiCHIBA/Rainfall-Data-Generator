@@ -1,8 +1,8 @@
 {
-  "name": "es2015-postcss-skeleton",
+  "name": "rain-data-generator",
   "version": "0.0.1",
-  "description": "",
-  "main": "",
+  "description": "Tool for generating the data of rainfall",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
