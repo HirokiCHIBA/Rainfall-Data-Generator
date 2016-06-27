@@ -209,7 +209,7 @@ class ParameterControler {
 export class RadiusControler extends ParameterControler {
     constructor(container, className) {
         super(container, className, 0.5, 0.5, 'x');
-        this.defaultRadius = 1500000;
+        this.defaultRadius = 1250000;
     }
 
     getAtTime(time) {
@@ -223,7 +223,6 @@ export class RadiusControler extends ParameterControler {
 export class TControler extends ParameterControler {
     constructor(container, className) {
         super(container, className, 0, 1, 'y');
-        this.defaultRadius = 1500000;
     }
 
     getAtTime(time) {

@@ -10,17 +10,17 @@ export default class Trajectory {
         this.className = className;
         this.polyline = null;
         this.spline = null;
+        this.slice = null;
         this.pathLength = 0;
         this.progresses = [];
         this.selectedControlPoint = null;
 
-        this.startTime = 670777200000;
-        this.endTime = 670787400000;
-
         this.defaultPeekValue = 60;
 
-        this.radiusControler = new RadiusControler(context.container, className);
-        this.tControler = new TControler(context.container, className);
+        this.controllerContainer = document.createElement('div');
+        this.radiusControler = new RadiusControler(this.controllerContainer, className);
+        this.tControler = new TControler(this.controllerContainer, className);
+        context.container.appendChild(this.controllerContainer);
     }
 
     addControlPoint(point) {
@@ -43,7 +43,8 @@ export default class Trajectory {
                 if (this.selectedControlPoint == null) {
                     this.context.deleteTrajectory(this.className);
                     this.radiusControler.delete();
-                    this.tControler.delete()
+                    this.tControler.delete();
+                    this.context.container.removeChild(this.controllerContainer);
                     return;
                 }
                 this.updateSpline();
@@ -107,6 +108,71 @@ export default class Trajectory {
         }).insertAfter(this.context.paper.select("image"));
     }
 
+    drawTimeSlice() {
+        this.removeTimeSlice();
+
+        const time = this.context.previewSliceTime;
+
+        const expectedT = this.tControler.getAtTime(time);
+        if (expectedT < 0) {
+            return;
+        }
+
+        this.updateAppearTime();
+
+        let fixedT = 0;
+        for (let i = 0; i < this.progresses.length; i++) {
+            if (this.progresses[i] / this.pathLength >= expectedT) {
+                fixedT = i / this.progresses.length;
+                break;
+            }
+        }
+
+        const radius = this.radiusControler.getAtTime(time);
+        const center = new Point(...this.spline.calcAt(fixedT));
+
+        this.slice = this.context.paper.g();
+        this.slice.circle(center.x, center.y, radius).attr({
+            fill: "none",
+            stroke: 'red',
+            strokeWidth: 100000
+        });
+        this.slice.circle(center.x, center.y, 75000).attr({
+            fill: 'red'
+        });
+    }
+
+    removeTimeSlice() {
+        if (this.slice != null) {
+            this.slice.remove();
+            this.slice = null;
+        }
+    }
+
+    hideCircles() {
+        this.context.paper.selectAll(`circle.${this.className}`).attr({
+            display: "none"
+        });
+    }
+
+    showCircles() {
+        this.context.paper.selectAll(`circle.${this.className}`).attr({
+            display: ""
+        });
+    }
+
+    hide() {
+        this.polyline.attr({
+            display: "none"
+        });
+    }
+
+    show() {
+        this.polyline.attr({
+            display: ""
+        });
+    }
+
     updateAppearTime() {
         this.radiusControler.startTime = this.tControler.emergeTime;
         this.radiusControler.endTime = this.tControler.submergeTime;
@@ -129,9 +195,9 @@ export default class Trajectory {
             }
         }
 
+        const radius = this.radiusControler.getAtTime(time);
         const center = new Point(...this.spline.calcAt(fixedT));
         const distance = point.getDistanceNormWith(center);
-        const radius = this.radiusControler.getAtTime(time);
         if (distance > radius) {
             return 0;
         }

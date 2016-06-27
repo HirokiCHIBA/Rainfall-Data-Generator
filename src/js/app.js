@@ -33,6 +33,10 @@ class GeomapContext {
         this.trajectories = {};
         this.selectedTrjectory = null;
 
+        this.startTime = 670777200000;
+        this.endTime = 670787400000;
+        this.interval = 600000;
+
         this.paper.click((e) => {
             const pixel = new Pixel(e.offsetX, e.offsetY);
             const point = Geomap.getPointFromPixel(pixel);
@@ -45,6 +49,8 @@ class GeomapContext {
 
         this.container = container;
         this.paper.prependTo(container);
+
+        this.previewSliceUpdate();
     }
 
     addTrajectory() {
@@ -60,9 +66,6 @@ class GeomapContext {
     }
 
     output() {
-        const startTime = 670777200000;
-        const endTime = 670787400000;
-        const interval = 600000;
         let topLeft = new LngLat(138.57642, 45.986748);
         let rightBottom = new LngLat(146.53738, 41.430252);
         const size = topLeft.getDistanceTo(rightBottom);
@@ -74,16 +77,19 @@ class GeomapContext {
 
         let content = "";
 
-        for (let time = startTime; time <= endTime; time += interval) {
+        for (let time = this.startTime; time <= this.endTime; time += this.interval) {
             for (let y = 0; y < division; y++) {
                 for (let x = 0; x < division; x++) {
                     const lngLat = new LngLat(topLeft.lng + step.lng * x, topLeft.lat + step.lat * y);
                     const point = Geomap.getPointFromLngLat(lngLat);
-                    let val = 0;
+                    let value = 0;
+                    // TASK: 同じ位置の同じ時刻の重なりは最大値をとる
                     for (let key in this.trajectories) {
-                        val += this.trajectories[key].getValueAtTimePoint(time, point);
+                        const v = this.trajectories[key].getValueAtTimePoint(time, point);
+                        if (v > value)
+                            value = v;
                     }
-                    content += `${time}\t${lngLat.lng}\t${lngLat.lat}\t${val}\n`;
+                    content += `${time}\t${lngLat.lng}\t${lngLat.lat}\t${value}\n`;
                 }
             }
         }
@@ -91,16 +97,38 @@ class GeomapContext {
         const blob = new Blob([ content ], { "type" : "text/tab-separated-values" });
         document.getElementById("download").href = window.URL.createObjectURL(blob);
     }
+
+    modeEdit() {
+        for (let key in this.trajectories) {
+            this.trajectories[key].show();
+            this.trajectories[key].showCircles();
+            this.trajectories[key].removeTimeSlice();
+        }
+    }
+
+    modeTrajectoriesPreview() {
+        for (let key in this.trajectories) {
+            this.trajectories[key].show();
+            this.trajectories[key].hideCircles();
+            this.trajectories[key].removeTimeSlice();
+        }
+    }
+
+
+    previewSliceUpdate() {
+        const value = document.getElementById("time-slider").value;
+        this.previewSliceTime = this.startTime + this.interval * value;
+        for (let key in this.trajectories) {
+            this.trajectories[key].hide();
+            this.trajectories[key].hideCircles();
+            this.trajectories[key].drawTimeSlice();
+        }
+    }
 }
 
-const container = document.querySelector("#container")
-const context = new GeomapContext(container);
-const box = document.createElement('div');
-const link = document.createElement('a');
-link.innerText = 'Download';
-link.setAttribute('id', 'download');
-link.setAttribute('download', 'data.tsv');
-link.setAttribute('href', '#');
-link.onclick = () => { context.output(); };
-box.appendChild(link);
-container.appendChild(box);
+const context = new GeomapContext(document.querySelector("#container"));
+document.getElementById("download").onclick = () => { context.output(); };
+document.getElementById("mode-edit").onclick = () => { context.modeEdit(); };
+document.getElementById("mode-tp").onclick = () => { context.modeTrajectoriesPreview(); };
+document.getElementById("mode-tsp").onclick = () => { context.previewSliceUpdate(); };
+document.getElementById("time-slider").onclick = () => { context.previewSliceUpdate(); };
