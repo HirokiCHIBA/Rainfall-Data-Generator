@@ -114,7 +114,6 @@ class GeomapContext {
         }
     }
 
-
     previewSliceUpdate() {
         const value = document.getElementById("time-slider").value;
         this.previewSliceTime = this.startTime + this.interval * value;
@@ -124,11 +123,26 @@ class GeomapContext {
             this.trajectories[key].drawTimeSlice();
         }
     }
+
+    capture() {
+        let source = this.paper.toString();
+        source = source.replace(/xmlns="http\:\/\/www\.w3\.org\/2000\/svg"/g,"");
+        source = source.replace(/xmlns\:xlink="http\:\/\/www\.w3\.org\/1999\/xlink"/g,"");
+        source = source.replace(/^<svg/,
+            '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"');
+        source = '<?xml version="1.0" standalone="no"?>\r\n' + source;
+
+        const url = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(source);
+        document.getElementById("capture").href = url;
+    }
 }
 
 const context = new GeomapContext(document.querySelector("#container"));
-document.getElementById("download").onclick = () => { context.output(); };
 document.getElementById("mode-edit").onclick = () => { context.modeEdit(); };
 document.getElementById("mode-tp").onclick = () => { context.modeTrajectoriesPreview(); };
 document.getElementById("mode-tsp").onclick = () => { context.previewSliceUpdate(); };
 document.getElementById("time-slider").onclick = () => { context.previewSliceUpdate(); };
+document.getElementById("capture").onclick = () => { context.capture(); };
+document.getElementById("import").onclick = () => {  };
+document.getElementById("export").onclick = () => {  };
+document.getElementById("download").onclick = () => { context.output(); };
