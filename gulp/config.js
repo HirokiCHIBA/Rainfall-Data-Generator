@@ -32,14 +32,25 @@ export const webpack = {
                 }
             },
             {
-                test:   /\.css$/,
+                test: /\.css$/,
                 loader: "style-loader!css-loader!postcss-loader"
+            },
+            {
+                test: /\.(jpg|png)$/,
+                loader: 'url-loader'
             }
         ]
     },
     plugins: [new BowerWebpackPlugin()],
-    postcss: function () {
-        return [precss, autoprefixer];
+    postcss: wpack => {
+        return [
+            require('postcss-import')({ addDependencyTo: wpack }),
+            require('postcss-nested'),
+            require('postcss-simple-vars'),
+            require('precss'),
+            require('autoprefixer'),
+            require('cssnano')
+        ];
     }
 };
 
