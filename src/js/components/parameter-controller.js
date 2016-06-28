@@ -191,7 +191,14 @@ class ParameterControler {
             fill: "none",
             stroke: '#000',
             strokeWidth: 5
-        }).prependTo(this.paper);
+        });
+
+        const label = this.paper.select('text');
+        if (label != null) {
+            this.polyline.insertAfter(label);
+        } else {
+            this.polyline.prependTo(this.paper);
+        }
 
         // FUTURE: まとめてドラッグ
         // let origin;
@@ -248,6 +255,13 @@ export class RadiusControler extends ParameterControler {
     constructor(container, className) {
         super(container, className, 0.5, 0.5, 'x');
         this.defaultRadius = 1250000;
+        const label = this.paper.text(this.width / 2, this.height / 2, "Radius").attr({
+            fill: "#ccc",
+            fontSize: "50px",
+            textAnchor: "middle",
+            dominantBaseline: "middle"
+        });
+        label.prependTo(this.paper);
     }
 
     getAtTime(time) {
@@ -261,6 +275,13 @@ export class RadiusControler extends ParameterControler {
 export class TControler extends ParameterControler {
     constructor(container, className) {
         super(container, className, 0, 1, 'y');
+        const label = this.paper.text(this.width / 2, this.height / 2, "T").attr({
+            fill: "#ccc",
+            fontSize: "50px",
+            textAnchor: "middle",
+            dominantBaseline: "middle"
+        });
+        label.prependTo(this.paper);
     }
 
     getAtTime(time) {
