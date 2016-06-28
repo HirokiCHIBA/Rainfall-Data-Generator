@@ -124,6 +124,7 @@ class GeomapContext {
         }
     }
 
+    // ※Inkscapeのみ正常に読み込み可能
     capture() {
         let source = this.paper.toString();
         source = source.replace(/xmlns="http\:\/\/www\.w3\.org\/2000\/svg"/g,"");
@@ -135,6 +136,47 @@ class GeomapContext {
         const url = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(source);
         document.getElementById("capture").href = url;
     }
+
+    export() {
+        let info = {}
+        for (let key in this.trajectories) {
+            info[key] = this.trajectories[key].export();
+        }
+
+        const content = JSON.stringify(info);
+
+        const blob = new Blob([ content ], { "type" : "application/json" });
+        document.getElementById("export").href = window.URL.createObjectURL(blob);
+    }
+
+    import(info) {
+        for (let key in this.trajectories) {
+            this.trajectories[key].delete();
+            this.deleteTrajectory(key);
+        }
+        this.trajectories = {};
+        for (let key in info) {
+            this.trajectories[key] = new Trajectory(this, key);
+            this.trajectories[key].import(info[key]);
+        }
+    }
+
+    readFile(e) {
+        if (!e.target.value)
+            return;
+
+        const files = e.target.files;
+        if (!files || files[0].type != 'application/json')
+            return;
+
+        var reader = new FileReader();
+
+        reader.onload = ((e) => {
+            this.import(JSON.parse(e.target.result));
+        });
+
+        reader.readAsText(files[0]);
+    }
 }
 
 const context = new GeomapContext(document.querySelector("#container"));
@@ -143,6 +185,7 @@ document.getElementById("mode-tp").onclick = () => { context.modeTrajectoriesPre
 document.getElementById("mode-tsp").onclick = () => { context.previewSliceUpdate(); };
 document.getElementById("time-slider").onclick = () => { context.previewSliceUpdate(); };
 document.getElementById("capture").onclick = () => { context.capture(); };
-document.getElementById("import").onclick = () => {  };
-document.getElementById("export").onclick = () => {  };
+document.getElementById("import-file").onchange = (e) => { context.readFile(e); };
+document.getElementById("import").onclick = () => { document.getElementById("import-file").click(); };
+document.getElementById("export").onclick = () => { context.export(); };
 document.getElementById("download").onclick = () => { context.output(); };

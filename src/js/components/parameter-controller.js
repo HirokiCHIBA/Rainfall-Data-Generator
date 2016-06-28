@@ -16,10 +16,18 @@ class ParameterControler {
         this.paper = Snap(400, this.height).remove();
         this.paper.appendTo(container);
 
-        this.startPoint = this.paper.circle(0, this.height * (1 - startValue), 5);
-        this.startPoint.addClass(`${this.className} start`);
-        this.endPoint = this.paper.circle(this.width, this.height * (1 - endValue), 5)
-        this.endPoint.addClass(`${this.className} end`);
+        this.startPoint = this.paper.circle(0, this.height * (1 - startValue), 8);
+        this.startPoint.addClass(`${this.className} start`).attr({
+            fill: "white",
+            stroke: 'black',
+            strokeWidth: 2
+        });
+        this.endPoint = this.paper.circle(this.width, this.height * (1 - endValue), 8)
+        this.endPoint.addClass(`${this.className} end`).attr({
+            fill: "white",
+            stroke: 'black',
+            strokeWidth: 2
+        });
         this.setCircleEvent(this.startPoint);
         this.setCircleEvent(this.endPoint);
 
@@ -34,7 +42,11 @@ class ParameterControler {
             });
             if (prevCircle == null || prevCircle.hasClass('end'))
                 return;
-            let circle = this.paper.circle(e.offsetX, e.offsetY, 5).addClass(this.className);
+            let circle = this.paper.circle(e.offsetX, e.offsetY, 5).attr({
+                fill: "white",
+                stroke: 'black',
+                strokeWidth: 2
+            }).addClass(this.className);
             prevCircle.after(circle);
             this.setCircleEvent(circle);
             this.drawPolyline();
@@ -203,6 +215,32 @@ class ParameterControler {
     delete() {
         this.paper.remove();
         this.paper = null;
+    }
+
+    export() {
+        let info = ""
+        this.paper.selectAll(`circle.${this.className}`).forEach((c) => {
+            info += c.toString();
+        });
+        return info;
+    }
+
+    import(info) {
+        this.paper.selectAll(`circle.${this.className}`).forEach((c) => {
+            c.remove();
+            c = null;
+        });
+        Snap.parse(info).selectAll("circle").forEach((c) => {
+            this.paper.append(c);
+            if (c.hasClass('start')) {
+                this.startPoint = c;
+            }
+            if (c.hasClass('end')) {
+                this.endPoint = c;
+            }
+            this.setCircleEvent(c);
+            this.drawPolyline();
+        });
     }
 }
 

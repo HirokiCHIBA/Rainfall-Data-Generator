@@ -25,6 +25,10 @@ export default class Trajectory {
 
     addControlPoint(point) {
         let circle = this.context.paper.circle(point.x, point.y, 100000).addClass(this.className);
+        this.setupCircle(circle);
+    }
+
+    setupCircle(circle) {
         let origin;
         circle.drag((dx, dy, x, y) => {
             const diffPoint = Geomap.getPointFromPixel(new Pixel(dx, dy));
@@ -41,20 +45,30 @@ export default class Trajectory {
                 circle = null;
                 this.selectedControlPoint = this.context.paper.select(`circle.${this.className}`);
                 if (this.selectedControlPoint == null) {
+                    this.delete();
                     this.context.deleteTrajectory(this.className);
-                    this.radiusControler.delete();
-                    this.tControler.delete();
-                    this.context.container.removeChild(this.controllerContainer);
                     return;
                 }
                 this.updateSpline();
             }
         });
-        if (this.selectedControlPoint != null) {
+        if (this.selectedControlPoint == null) {
+            circle.appendTo(this.context.paper);
+        } else {
             circle.insertAfter(this.selectedControlPoint);
         }
         this.updateSelected(circle);
         this.updateSpline();
+    }
+
+    delete() {
+        this.context.paper.selectAll(`circle.${this.className}`).forEach((c) =>{
+            c.remove();
+        });
+        this.removePolyline();
+        this.radiusControler.delete();
+        this.tControler.delete();
+        this.context.container.removeChild(this.controllerContainer);
     }
 
     updateSelected(circle) {
@@ -97,15 +111,19 @@ export default class Trajectory {
             drawPoints.push(...point.array);
         }
 
-        if (this.polyline != null) {
-            this.polyline.remove();
-            this.polyline = null;
-        }
+        this.removePolyline();
         this.polyline = this.context.paper.polyline(drawPoints).attr({
             fill: "none",
             stroke: 'red',
             strokeWidth: 100000
         }).insertAfter(this.context.paper.select("image"));
+    }
+
+    removePolyline() {
+        if (this.polyline != null) {
+            this.polyline.remove();
+            this.polyline = null;
+        }
     }
 
     drawTimeSlice() {
@@ -149,6 +167,28 @@ export default class Trajectory {
         }
     }
 
+    export() {
+        let info = {}
+        info['trajectory'] = ""
+        this.context.paper.selectAll(`circle.${this.className}`).forEach((c) => {
+            info['trajectory'] += c.toString();
+        });
+
+        info['radius'] = this.radiusControler.export();
+        info['t'] = this.tControler.export();
+
+        return info;
+    }
+
+    import(info) {
+        Snap.parse(info["trajectory"]).selectAll("circle").forEach((c) => {
+            this.setupCircle(c);
+        });
+
+        this.radiusControler.import(info['radius']);
+        this.tControler.import(info['t']);
+    }
+
     hideCircles() {
         this.context.paper.selectAll(`circle.${this.className}`).attr({
             display: "none"
@@ -162,12 +202,18 @@ export default class Trajectory {
     }
 
     hide() {
+        if (this.polyline == null)
+            return;
+
         this.polyline.attr({
             display: "none"
         });
     }
 
     show() {
+        if (this.polyline == null)
+            return;
+
         this.polyline.attr({
             display: ""
         });
