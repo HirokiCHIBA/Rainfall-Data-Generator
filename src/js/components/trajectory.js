@@ -101,7 +101,7 @@ export default class Trajectory {
 
         let drawPoints = [];
         let prevPoint = null;
-        for (let t = 0; t <= 1; t += 0.01) {
+        for (let t = 0; t <= 1; t += 0.0005) {
             const point = new Point(...this.spline.calcAt(t));
             if (prevPoint != null) {
                 this.pathLength += point.getDistanceNormWith(prevPoint);
