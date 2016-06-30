@@ -11,8 +11,8 @@ import background from '../../img/background.png';
 // Lat Limits: 41.430252 -- 45.986748
 // Lon Limits: 138.57642 -- 146.53738
 
-export default class Application {
-    constructor(container) {
+export default class MainView {
+    constructor() {
         this.paper = Snap(Geomap.size.width, Geomap.size.height).remove().attr({
             viewBox: [ 0, 0, Geomap.pointRanges.x, Geomap.pointRanges.y ]
         });
@@ -35,8 +35,8 @@ export default class Application {
             this.selectedTrjectory.addControlPoint(point);
         });
 
-        this.container = container;
-        this.paper.prependTo(container);
+        this.container = document.querySelector("#container");
+        this.paper.prependTo(this.container);
 
         this.animationIntervalID = null;
         // this.previewSliceUpdate();
