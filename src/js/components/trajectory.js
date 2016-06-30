@@ -245,10 +245,11 @@ export default class Trajectory {
         const center = new Point(...this.spline.calcAt(fixedT));
         const distance = point.getDistanceNormWith(center);
         if (distance > radius) {
-            return 0;
+            return 0
         }
 
-        const valueT = 1 - distance / radius;
-        return this.defaultPeekValue * valueT;
+        const distanceT = distance / radius;
+        const valueT = Math.exp(-1.25 * distanceT) * (1 - distanceT);
+        return this.defaultPeekValue * valueT + 1;
     }
 }

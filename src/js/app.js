@@ -86,11 +86,11 @@ class GeomapContext {
                     const lngLat = new LngLat(topLeft.lng + step.lng * x, topLeft.lat + step.lat * y);
                     const point = Geomap.getPointFromLngLat(lngLat);
                     let value = 0;
-                    // TASK: 同じ位置の同じ時刻の重なりは最大値をとる
                     for (let key in this.trajectories) {
                         const v = this.trajectories[key].getValueAtTimePoint(time, point);
-                        if (v > value)
-                            value = v;
+                        // if (v > value)
+                        //     value = v;
+                        value += v;
                     }
                     content += `${time}\t${lngLat.lng}\t${lngLat.lat}\t${value}\n`;
                 }

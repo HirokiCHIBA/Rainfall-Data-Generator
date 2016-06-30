@@ -199,24 +199,6 @@ class ParameterControler {
         } else {
             this.polyline.prependTo(this.paper);
         }
-
-        // FUTURE: まとめてドラッグ
-        // let origin;
-        // this.polyline.drag((dx, dy, x, y) => {
-        //     let newy = origin.y + dy
-        //     if (newy > this.height) {
-        //         newy = this.height;
-        //     }
-        //     if (newy < 0) {
-        //         newy = 0;
-        //     }
-        //     this.polyline.attr({cy: newy});
-        // }, (x, y) => {
-        //     origin = new Pixel(this.polyline.attr("cx"), this.polyline.attr("cy"));
-        // });
-        // this.polyline.click((e) => {
-        //     e.stopPropagation();
-        // });
     }
 
     delete() {
@@ -254,7 +236,7 @@ class ParameterControler {
 export class RadiusControler extends ParameterControler {
     constructor(container, className) {
         super(container, className, 0.5, 0.5, 'x');
-        this.defaultRadius = 1250000;
+        this.defaultRadius = 1500000;
         const label = this.paper.text(this.width / 2, this.height / 2, "Radius").attr({
             fill: "#ccc",
             fontSize: "50px",
