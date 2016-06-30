@@ -50,7 +50,8 @@ class GeomapContext {
         this.container = container;
         this.paper.prependTo(container);
 
-        this.previewSliceUpdate();
+        this.animationIntervalID = null;
+        // this.previewSliceUpdate();
     }
 
     addTrajectory() {
@@ -66,6 +67,8 @@ class GeomapContext {
     }
 
     output() {
+        this.endAnimation();
+
         let topLeft = new LngLat(138.57642, 45.986748);
         let rightBottom = new LngLat(146.53738, 41.430252);
         const size = topLeft.getDistanceTo(rightBottom);
@@ -99,6 +102,8 @@ class GeomapContext {
     }
 
     modeEdit() {
+        this.endAnimation();
+
         for (let key in this.trajectories) {
             this.trajectories[key].show();
             this.trajectories[key].showCircles();
@@ -107,6 +112,8 @@ class GeomapContext {
     }
 
     modeTrajectoriesPreview() {
+        this.endAnimation();
+
         for (let key in this.trajectories) {
             this.trajectories[key].show();
             this.trajectories[key].hideCircles();
@@ -114,8 +121,15 @@ class GeomapContext {
         }
     }
 
-    previewSliceUpdate() {
-        const value = document.getElementById("time-slider").value;
+    previewSlice(target = document.getElementById("time-input")) {
+        this.endAnimation();
+        this.previewSliceUpdate(target);
+    }
+
+    previewSliceUpdate(target) {
+        const value = target.value;
+        document.getElementById("time-slider").value = value;
+        document.getElementById("time-input").value = value;
         this.previewSliceTime = this.startTime + this.interval * value;
         for (let key in this.trajectories) {
             this.trajectories[key].hide();
@@ -124,8 +138,30 @@ class GeomapContext {
         }
     }
 
+    startAnimation() {
+        const target = document.getElementById("time-input");
+        let slice = 0;
+        target.value = slice;
+        this.previewSlice(target);
+
+        this.animationIntervalID = setInterval(() => {
+            slice = (slice + 1) % 18;
+            target.value = slice;
+            this.previewSliceUpdate(target);
+        }, 500)
+    }
+
+    endAnimation() {
+        if (this.animationIntervalID != null) {
+            clearInterval(this.animationIntervalID);
+            this.animationIntervalID = null;
+        }
+    }
+
     // ※Inkscapeのみ正常に読み込み可能
     capture() {
+        this.endAnimation();
+
         let source = this.paper.toString();
         source = source.replace(/xmlns="http\:\/\/www\.w3\.org\/2000\/svg"/g,"");
         source = source.replace(/xmlns\:xlink="http\:\/\/www\.w3\.org\/1999\/xlink"/g,"");
@@ -138,6 +174,8 @@ class GeomapContext {
     }
 
     export() {
+        this.endAnimation();
+
         let info = {}
         for (let key in this.trajectories) {
             info[key] = this.trajectories[key].export();
@@ -161,6 +199,11 @@ class GeomapContext {
         }
     }
 
+    importFile() {
+        this.endAnimation();
+        document.getElementById("import-file").click();
+    }
+
     readFile(e) {
         if (!e.target.value)
             return;
@@ -182,10 +225,12 @@ class GeomapContext {
 const context = new GeomapContext(document.querySelector("#container"));
 document.getElementById("mode-edit").onclick = () => { context.modeEdit(); };
 document.getElementById("mode-tp").onclick = () => { context.modeTrajectoriesPreview(); };
-document.getElementById("mode-tsp").onclick = () => { context.previewSliceUpdate(); };
-document.getElementById("time-slider").onclick = () => { context.previewSliceUpdate(); };
+document.getElementById("mode-tsp").onclick = () => { context.previewSlice(); };
+document.getElementById("mode-animation").onclick = () => { context.startAnimation(); };
+document.getElementById("time-slider").onchange = (e) => { context.previewSlice(e.target); };
+document.getElementById("time-input").onchange = (e) => { context.previewSlice(e.target); };
 document.getElementById("capture").onclick = () => { context.capture(); };
 document.getElementById("import-file").onchange = (e) => { context.readFile(e); };
-document.getElementById("import").onclick = () => { document.getElementById("import-file").click(); };
+document.getElementById("import").onclick = () => { context.importFile(); };
 document.getElementById("export").onclick = () => { context.export(); };
 document.getElementById("download").onclick = () => { context.output(); };

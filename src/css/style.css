@@ -20,6 +20,16 @@ body {
     }
 }
 
-#time-slider {
-    margin: 10px 0;
+#slice-selector {
+    display: flex;
+    margin: 5px 0;
+    align-items: center;
+
+    #time-slider {
+        margin-right: 5px;
+    }
+
+    #time-input {
+        width: 60px
+    }
 }

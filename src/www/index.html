@@ -12,7 +12,11 @@
         <a id="mode-edit" class="btn btn-default btn-block">Editor Mode</a>
         <a id="mode-tp" class="btn btn-default btn-block">Trajectories Preview</a>
         <a id="mode-tsp" class="btn btn-default btn-block">Time Slice Preview</a>
-        <input id="time-slider" type="range" min="0" max="17" step="1" value="0" />
+        <div id="slice-selector">
+            <input id="time-slider" type="range" min="0" max="17" step="1" value="0" />
+            <input id="time-input" class="form-control" type="number" min="0" max="17" value="0" />
+        </div>
+        <a id="mode-animation" class="btn btn-default btn-block">Animation Preview</a>
         <a id="capture" download="canvas.svg" class="btn btn-default btn-block">Capture Canvas</a>
         <hr>
         <input id="import-file" class="hidden" type="file" accept="application/json" />
