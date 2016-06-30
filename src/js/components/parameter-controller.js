@@ -259,8 +259,9 @@ export class RadiusControler extends ParameterControler {
             fill: "#ccc",
             fontSize: "50px",
             textAnchor: "middle",
-            dominantBaseline: "middle"
-        });
+            dominantBaseline: "middle",
+            cursor: "default"
+        }).mousedown((e) => { e.preventDefault(); });
         label.prependTo(this.paper);
     }
 
@@ -279,8 +280,9 @@ export class TControler extends ParameterControler {
             fill: "#ccc",
             fontSize: "50px",
             textAnchor: "middle",
-            dominantBaseline: "middle"
-        });
+            dominantBaseline: "middle",
+            cursor: "default"
+        }).mousedown((e) => { e.preventDefault(); });
         label.prependTo(this.paper);
     }
 
