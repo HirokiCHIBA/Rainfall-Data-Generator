@@ -23,7 +23,11 @@ export class Vector {
 
     getDistanceNormWith(vector) {
         const distance = this.getDistanceTo(vector);
-        return Math.sqrt(distance.x * distance.x + distance.y * distance.y);
+        return distance.getNorm();
+    }
+
+    getNorm() {
+        return Math.sqrt(this.x * this.x + this.y * this.y);
     }
 }
 

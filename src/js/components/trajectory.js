@@ -1,7 +1,7 @@
 'use strict';
 
 import { Pixel, Point, LngLat, Geomap } from './geomap';
-import { RadiusControler, TControler } from './parameter-controller'
+import { RadiusControler, TControler, PeakPointController } from './parameter-controller'
 import BSpline from './b-spline';
 
 export default class Trajectory {
@@ -15,12 +15,14 @@ export default class Trajectory {
         this.progresses = [];
         this.selectedControlPoint = null;
 
-        this.defaultPeekValue = 60;
+        this.defaultPeekValue = 65;
 
+        this.paramContainer = document.querySelector("#param-container");
         this.controllerContainer = document.createElement('div');
         this.radiusControler = new RadiusControler(this.controllerContainer, className);
         this.tControler = new TControler(this.controllerContainer, className);
-        context.container.appendChild(this.controllerContainer);
+        this.peakPointController = new PeakPointController(this.controllerContainer);
+        this.paramContainer.appendChild(this.controllerContainer);
     }
 
     addControlPoint(point) {
@@ -68,7 +70,8 @@ export default class Trajectory {
         this.removePolyline();
         this.radiusControler.delete();
         this.tControler.delete();
-        this.context.container.removeChild(this.controllerContainer);
+        this.peakPointController.delete();
+        this.paramContainer.removeChild(this.controllerContainer);
     }
 
     updateSelected(circle) {
@@ -148,6 +151,7 @@ export default class Trajectory {
 
         const radius = this.radiusControler.getAtTime(time);
         const center = new Point(...this.spline.calcAt(fixedT));
+        const peakPoint = this.peakPointController.getPeakPoint(center, radius);
 
         this.slice = this.context.paper.g();
         this.slice.circle(center.x, center.y, radius).attr({
@@ -155,7 +159,7 @@ export default class Trajectory {
             stroke: 'red',
             strokeWidth: 100000
         });
-        this.slice.circle(center.x, center.y, 75000).attr({
+        this.slice.circle(peakPoint.x, peakPoint.y, 75000).attr({
             fill: 'red'
         });
     }
@@ -176,6 +180,7 @@ export default class Trajectory {
 
         info['radius'] = this.radiusControler.export();
         info['t'] = this.tControler.export();
+        info['peakpoint'] = this.peakPointController.export();
 
         return info;
     }
@@ -187,6 +192,7 @@ export default class Trajectory {
 
         this.radiusControler.import(info['radius']);
         this.tControler.import(info['t']);
+        this.peakPointController.import(info['peakpoint']);
     }
 
     hideCircles() {
@@ -244,11 +250,18 @@ export default class Trajectory {
         const radius = this.radiusControler.getAtTime(time);
         const center = new Point(...this.spline.calcAt(fixedT));
         const distance = point.getDistanceNormWith(center);
+
         if (distance > radius) {
-            return 0
+            return 0;
         }
 
-        const distanceT = distance / radius;
+        const peakPoint = this.peakPointController.getPeakPoint(center, radius);
+        const distPointPeak = point.getDistanceFrom(peakPoint);
+        const distCenterPeak = center.getDistanceFrom(peakPoint);
+        const normPointPeak = distPointPeak.getNorm();
+        const d = distPointPeak.x * distCenterPeak.y - distPointPeak.y * distCenterPeak.x;
+        const distanceT = normPointPeak * normPointPeak / (distPointPeak.x * distCenterPeak.x + distPointPeak.y * distCenterPeak.y + Math.sqrt(normPointPeak * normPointPeak * radius * radius - d * d));
+
         const valueT = Math.exp(-1.25 * distanceT) * (1 - distanceT);
         return this.defaultPeekValue * valueT + 1;
     }

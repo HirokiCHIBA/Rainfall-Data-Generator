@@ -35,7 +35,7 @@ export default class MainView {
             this.selectedTrjectory.addControlPoint(point);
         });
 
-        this.container = document.querySelector("#container");
+        this.container = document.querySelector("#map-container");
         this.paper.prependTo(this.container);
 
         this.animationIntervalID = null;

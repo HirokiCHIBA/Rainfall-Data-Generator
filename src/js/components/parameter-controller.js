@@ -13,7 +13,7 @@ class ParameterControler {
         this.endTime = 670787400000;
 
         this.className = className;
-        this.paper = Snap(400, this.height).remove();
+        this.paper = Snap(this.width, this.height).remove();
         this.paper.appendTo(container);
 
         this.startPoint = this.paper.circle(0, this.height * (1 - startValue), 8);
@@ -290,5 +290,80 @@ export class TControler extends ParameterControler {
     get submergeTime() {
         const end = this.paper.select(`circle.${this.className}.end`);
         return this.getTimeFromCircle(end);
+    }
+}
+
+export class PeakPointController {
+    constructor(container) {
+        this.radius = 100;
+
+        this.paper = Snap(this.radius * 2, this.radius * 2).remove();
+        this.paper.appendTo(container);
+
+        this.center = new Pixel(this.radius, this.radius);
+
+        this.paper.text(this.center.x, this.center.y, "Peak").attr({
+            fill: "#ccc",
+            fontSize: "50px",
+            textAnchor: "middle",
+            dominantBaseline: "middle",
+            cursor: "default"
+        }).mousedown((e) => { e.preventDefault(); });
+
+        this.paper.circle(this.center.x, this.center.y, this.radius).attr({
+            fill: "none",
+            stroke: 'black',
+            strokeWidth: 5
+        });
+
+        this.peakCircle = this.paper.circle(this.center.x, this.center.y, 8).attr({
+            fill: "white",
+            stroke: 'black',
+            strokeWidth: 2
+        });
+
+        this.setCircleEvent(this.peakCircle);
+    }
+
+    setCircleEvent(circle) {
+        let origin;
+        let prevx;
+        let nextx;
+        circle.drag((dx, dy, x, y) => {
+            let pixel = new Pixel(origin.x + dx, origin.y + dy);
+            if (pixel.getDistanceNormWith(this.center) <= this.radius) {
+                pixel.x = Snap.snapTo([this.center.x], pixel.x, 8);
+                pixel.y = Snap.snapTo([this.center.y], pixel.y, 8);
+                circle.attr({cx: pixel.x, cy: pixel.y});
+            }
+        }, (x, y, e) => {
+            origin = new Pixel(circle.attr("cx"), circle.attr("cy"));
+        });
+
+        circle.click((e) => {
+            e.stopPropagation();
+        });
+    }
+
+    getPeakPoint(center, radius) {
+        const ratio = radius / this.radius;
+        let point = new Point(this.peakCircle.attr("cx") - this.center.x, this.peakCircle.attr("cy") - this.center.y);
+        point.x = point.x * ratio + center.x;
+        point.y = point.y * ratio + center.y;
+        return point;
+    }
+
+    delete() {
+        this.paper.remove();
+        this.paper = null;
+    }
+
+    export() {
+        return (new Pixel(this.peakCircle.attr("cx"), this.peakCircle.attr("cy"))).array;
+    }
+
+    import(info) {
+        const pixel = new Pixel(...info);
+        this.peakCircle.attr({ cx: pixel.x, cy: pixel.y });
     }
 }

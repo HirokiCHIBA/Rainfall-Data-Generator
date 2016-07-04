@@ -5,25 +5,30 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
 </head>
 <body>
-    <div id="container"></div>
-    <div id="action-panel">
-        <h1>Rainfall Data<br>Generator</h1>
-        <hr>
-        <a id="mode-edit" class="btn btn-default btn-block">Editor Mode</a>
-        <a id="mode-tp" class="btn btn-default btn-block">Trajectories Preview</a>
-        <a id="mode-tsp" class="btn btn-default btn-block">Time Slice Preview</a>
-        <div id="slice-selector">
-            <input id="time-slider" type="range" min="0" max="17" step="1" value="0" />
-            <input id="time-input" class="form-control" type="number" min="0" max="17" value="0" />
+    <div id="main">
+        <div id="map-row">
+            <div id="map-container"></div>
+            <div id="action-panel">
+                <h1>Rainfall Data<br>Generator</h1>
+                <hr>
+                <a id="mode-edit" class="btn btn-default btn-block">Editor Mode</a>
+                <a id="mode-tp" class="btn btn-default btn-block">Trajectories Preview</a>
+                <a id="mode-tsp" class="btn btn-default btn-block">Time Slice Preview</a>
+                <div id="slice-selector">
+                    <input id="time-slider" type="range" min="0" max="17" step="1" value="0" />
+                    <input id="time-input" class="form-control" type="number" min="0" max="17" value="0" />
+                </div>
+                <a id="mode-animation" class="btn btn-default btn-block">Animation Preview</a>
+                <a id="capture" download="capture.svg" class="btn btn-default btn-block">Capture Canvas</a>
+                <hr>
+                <input id="import-file" class="hidden" type="file" accept="application/json" />
+                <a id="import" class="btn btn-default btn-block">Import Settings</a>
+                <a id="export" download="settings.json" class="btn btn-default btn-block">Export Settings</a>
+                <hr>
+                <a id="download" download="data.tsv" class="btn btn-default btn-block">Download Data</a>
+            </div>
         </div>
-        <a id="mode-animation" class="btn btn-default btn-block">Animation Preview</a>
-        <a id="capture" download="capture.svg" class="btn btn-default btn-block">Capture Canvas</a>
-        <hr>
-        <input id="import-file" class="hidden" type="file" accept="application/json" />
-        <a id="import" class="btn btn-default btn-block">Import Settings</a>
-        <a id="export" download="settings.json" class="btn btn-default btn-block">Export Settings</a>
-        <hr>
-        <a id="download" download="data.tsv" class="btn btn-default btn-block">Download Data</a>
+        <div id="param-container"></div>
     </div>
 </body>
 <script src="js/bundle.js"></script>
