@@ -363,6 +363,7 @@ export class PeakPointController {
     }
 
     import(info) {
+        if (typeof info == "undefined") return;
         const pixel = new Pixel(...info);
         this.peakCircle.attr({ cx: pixel.x, cy: pixel.y });
     }

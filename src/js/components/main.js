@@ -162,7 +162,7 @@ export default class MainView {
     }
 
     export() {
-        this.endAnimation();
+        this.modeEdit();
 
         let info = {}
         for (let key in this.trajectories) {
@@ -185,6 +185,8 @@ export default class MainView {
             this.trajectories[key] = new Trajectory(this, key);
             this.trajectories[key].import(info[key]);
         }
+
+        this.modeEdit();
     }
 
     importFile() {
