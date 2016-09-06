@@ -159,8 +159,10 @@ export default class Trajectory {
             stroke: 'red',
             strokeWidth: 100000
         });
-        this.slice.circle(peakPoint.x, peakPoint.y, 75000).attr({
-            fill: 'red'
+        this.slice.circle(peakPoint.x, peakPoint.y, 100000).attr({
+            fill: "none",
+            stroke: 'red',
+            strokeWidth: 75000
         });
     }
 
