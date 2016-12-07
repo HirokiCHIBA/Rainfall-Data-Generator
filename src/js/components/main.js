@@ -57,8 +57,8 @@ export default class MainView {
     output() {
         this.endAnimation();
 
-        let topLeft = new LngLat(138.57642, 45.986748);
-        let rightBottom = new LngLat(146.53738, 41.430252);
+        let topLeft = new LngLat(138.57642, 46.585712);
+        let rightBottom = new LngLat(146.53738, 40.831288);
         const size = topLeft.getDistanceTo(rightBottom);
         const division = 32;
         const step = {
