@@ -236,7 +236,7 @@ class ParameterControler {
 export class RadiusControler extends ParameterControler {
     constructor(container, className) {
         super(container, className, 0.5, 0.5, 'x');
-        this.defaultRadius = 1500000;
+        this.defaultRadius = 150;
         const label = this.paper.text(this.width / 2, this.height / 2, "Radius").attr({
             fill: "#ccc",
             fontSize: "50px",

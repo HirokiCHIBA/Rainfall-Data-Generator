@@ -26,7 +26,7 @@ export default class Trajectory {
     }
 
     addControlPoint(point) {
-        let circle = this.context.paper.circle(point.x, point.y, 100000).addClass(this.className);
+        let circle = this.context.paper.circle(point.x, point.y, 10).addClass(this.className);
         this.setupCircle(circle);
     }
 
@@ -118,7 +118,7 @@ export default class Trajectory {
         this.polyline = this.context.paper.polyline(drawPoints).attr({
             fill: "none",
             stroke: 'red',
-            strokeWidth: 100000
+            strokeWidth: 10
         }).insertAfter(this.context.paper.select("image"));
     }
 
@@ -157,12 +157,12 @@ export default class Trajectory {
         this.slice.circle(center.x, center.y, radius).attr({
             fill: "none",
             stroke: 'red',
-            strokeWidth: 100000
+            strokeWidth: 10
         });
-        this.slice.circle(peakPoint.x, peakPoint.y, 100000).attr({
+        this.slice.circle(peakPoint.x, peakPoint.y, 10).attr({
             fill: "none",
             stroke: 'red',
-            strokeWidth: 75000
+            strokeWidth: 7.5
         });
     }
 

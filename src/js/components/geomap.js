@@ -83,15 +83,15 @@ export class LngLat extends Vector {
 export class Geomap {
     static get scales() {
         return {
-            lng: 1383450.2201,
-            lat: 1000000
+            lng: 125.92446,
+            lat: 91.02204
         };
     }
 
     static get pointRanges() {
         return {
-            x: 6.353015 * this.scales.lng,
-            y: 8.78908 * this.scales.lat
+            x: 800,
+            y: 800
         };
     }
 
